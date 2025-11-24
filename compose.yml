@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  app:
+    image: php:8.3-cli  # CLI puro pro artisan/serve
+    container_name: capoeira_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html  # Mapeia seu código local
+    depends_on:
+      - db
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=capoeira_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=rootpassword
+    working_dir: /var/www/html
+    command: |
+      bash -c "
+        apt-get update &&
+        apt-get install -y libzip-dev libpng-dev libjpeg-dev libfreetype6-dev zip unzip git curl &&
+        docker-php-ext-configure gd --with-freetype --with-jpeg &&
+        docker-php-ext-install gd pdo pdo_mysql zip &&
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+        composer install --optimize-autoloader &&
+        tail -f /dev/null  # Mantém o container vivo pra execs
+      "
+
+  node:
+    image: node:20
+    container_name: capoeira_node
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: tail -f /dev/null  # Pra rodar npm manual
+
+  db:
+    image: mysql:8.0
+    container_name: capoeira_db
+    ports:
+      - "3306:3306"  # Pra conectar de fora se quiser (ex: TablePlus)
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: capoeira_db
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persistência
+
+volumes:
+  mysql_data:
