@@ -1,7 +1,6 @@
-<div class="timeline ">
+<div class="timeline">
     @foreach($timeline as $event)
-        <div class="timeline-item 
-            {{ $event['type'] == 'corda' ? 'border-l-4 border-blue-500' : 'border-l-4 border-green-500' }} pl-4 mb-4 ">
+        <div class="timeline-item {{ $event['type'] == 'corda' ? 'border-l-4 border-blue-500' : 'border-l-4 border-green-500' }} pl-4 mb-4">
             <div class="flex items-center">
                 <div class="timeline-icon rounded-full bg-gray-200 p-2 mr-4">
                     {{ $event['type'] == 'inicio' ? '🏃' : '🧵' }}
@@ -18,6 +17,5 @@
                 </div>
             </div>
         </div>
-        
     @endforeach
 </div>
